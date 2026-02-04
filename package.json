@@ -1,0 +1,17 @@
+{
+  "name": "vscse",
+  "version": "0.1.0",
+  "description": "Visual Studio Code, Secrets Modification Tool API",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "vscse": "dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc"
+  },
+  "author": "xNasuni",
+  "license": "MIT",
+  "packageManager": "pnpm@10.18.0"
+}

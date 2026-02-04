@@ -1,0 +1,6 @@
+# dev
+node_modules/
+dist/
+
+# secrets
+*.env
