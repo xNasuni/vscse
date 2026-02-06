@@ -6,14 +6,12 @@ import { DATA } from '../../src'
 import { error } from '../../src/common/log'
 import { validateLocalState } from '../../src/common/tools'
 
-let cachedRawKey: Uint8Array | null = null
-
 export class WindowsCryptoProvider implements PlatformEncryptionProvider {
     private key: Uint8Array | null
 
     constructor() {
         this.key = this.getRawKey()
-        if (!cachedRawKey) {
+        if (!this.key) {
             throw new Error(
                 'Encryption provider could not get keys for encryption',
             )
@@ -21,8 +19,8 @@ export class WindowsCryptoProvider implements PlatformEncryptionProvider {
     }
 
     getRawKey(): Uint8Array | null {
-        if (cachedRawKey) {
-            return cachedRawKey
+        if (this.key) {
+            return this.key
         }
 
         const keyPath =
@@ -32,7 +30,7 @@ export class WindowsCryptoProvider implements PlatformEncryptionProvider {
             return null
         }
 
-        if (validateLocalState(keyPath)) {
+        if (!validateLocalState(keyPath)) {
             error('invalid local state path')
             return null
         }
@@ -46,8 +44,8 @@ export class WindowsCryptoProvider implements PlatformEncryptionProvider {
             'base64',
         ).subarray(5)
 
-        cachedRawKey = unprotectData(encryptedKey, null, 'CurrentUser')
-        return cachedRawKey
+        this.key = unprotectData(encryptedKey, null, 'CurrentUser')
+        return this.key
     }
 
     decrypt(encryptedBuffer: Buffer): Buffer {
