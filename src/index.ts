@@ -2,11 +2,12 @@ import Options from './impl/options'
 import Find from './impl/find'
 import Repl, { get, ls, rm, set } from './impl/repl'
 import { error, fatal, infoblue, infogreen } from './common/log'
-import { MainDataStruct, Result, RunType } from './common/types'
+import { MainDataStruct, RunType } from './common/types'
 import { strerr, validateLocalState, validateSQLite } from './common/tools'
 import { VSCDB } from '../api/vscdb'
 import exportSecrets from './impl/export'
 import importSecrets from './impl/import'
+import { Result } from '../api/common/types'
 
 export const PLATFORM = process.platform
 export const ARCH = process.arch
@@ -15,7 +16,7 @@ export const DATA: MainDataStruct = {
     vscseRunType: RunType.Repl,
 }
 
-const SUPPORTED_PLATFORMS: NodeJS.Platform[] = ['win32'] // todo(xNasuni): support for "linux", "darwin"
+const SUPPORTED_PLATFORMS: NodeJS.Platform[] = ['win32', 'linux'] // todo(xNasuni): support for "linux", "darwin"
 
 async function main() {
     if (!SUPPORTED_PLATFORMS.includes(PLATFORM as NodeJS.Platform)) {
@@ -58,7 +59,7 @@ async function main() {
         }
 
         infoblue('forcing local state file path')
-    } else {
+    } else if (DATA.foundLocalStateFilePath) {
         infogreen('found local state file path')
     }
 
@@ -67,17 +68,11 @@ async function main() {
         error('no vscdb path available')
         return
     }
-    const keyPath =
-        DATA.forcedLocalStateFilePath || DATA.foundLocalStateFilePath
-    if (!keyPath) {
-        error('no local state path available')
-        return
-    }
 
     var vscdb
 
     try {
-        vscdb = new VSCDB(dbPath, keyPath, false)
+        vscdb = new VSCDB(dbPath, false)
     } catch (err) {
         fatal(
             `database failed to mount rw: ${strerr(err)} (visual studio code shouldn't be open)`,

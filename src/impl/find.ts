@@ -1,9 +1,9 @@
 import { homedir } from 'os'
 import { join } from 'path'
 import { existsSync } from 'fs'
-import { Result } from '../common/types'
 import { DATA } from '..'
 import { validateLocalState, validateSQLite } from '../common/tools'
+import { Result } from '../../api/common/types'
 
 const NO_PATH = () => ''
 const VSCDB_PATHS: Record<NodeJS.Platform, () => string> = {
@@ -50,15 +50,8 @@ const LOCAL_STATE_PATHS: Record<NodeJS.Platform, () => string> = {
         process.env.APPDATA
             ? join(process.env.APPDATA, 'Code', 'Local State')
             : '',
-    linux: () => join(homedir(), '.config', 'Code', 'Local State'),
-    darwin: () =>
-        join(
-            homedir(),
-            'Library',
-            'Application Support',
-            'Code',
-            'Local State',
-        ),
+    linux: NO_PATH,
+    darwin: NO_PATH,
     aix: NO_PATH,
     android: NO_PATH,
     freebsd: NO_PATH,
@@ -73,26 +66,16 @@ export default async function Find(): Promise<Result> {
     const getVscdbPath = VSCDB_PATHS[process.platform]
     const getLocalStatePath = LOCAL_STATE_PATHS[process.platform]
 
-    if (!getVscdbPath) {
+    const vscdbPath = getVscdbPath?.()
+    const localStatePath = getLocalStatePath?.()
+
+    if (!vscdbPath) {
         DATA.lastError = "platform doesn't have vscdb path set"
         return Result.Error
     }
 
-    if (!getLocalStatePath) {
-        DATA.lastError = "platform doesn't have local state path set"
-        return Result.Error
-    }
-
-    const vscdbPath = getVscdbPath()
-    const localStatePath = getLocalStatePath()
-
     if (!existsSync(vscdbPath)) {
         DATA.lastError = "platform vscdb file doesn't exist"
-        return Result.Error
-    }
-
-    if (!existsSync(localStatePath)) {
-        DATA.lastError = "platform local state file doesn't exist"
         return Result.Error
     }
 
@@ -102,13 +85,21 @@ export default async function Find(): Promise<Result> {
         return Result.Error
     }
 
-    if (!validateLocalState(localStatePath)) {
-        DATA.lastError =
-            'platform local state file is not a valid local state json file or cannot be read'
-        return Result.Error
+    if (localStatePath) {
+        if (!existsSync(localStatePath)) {
+            DATA.lastError = "platform local state file doesn't exist"
+            return Result.Error
+        }
+
+        if (!validateLocalState(localStatePath)) {
+            DATA.lastError =
+                'platform local state file is not a valid local state json file or cannot be read'
+            return Result.Error
+        }
+
+        DATA.foundLocalStateFilePath = localStatePath
     }
 
     DATA.foundVSCDBFilePath = vscdbPath
-    DATA.foundLocalStateFilePath = localStatePath
     return Result.Okay
 }

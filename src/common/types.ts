@@ -20,19 +20,3 @@ export enum RunType {
     Import,
     Export,
 }
-
-export enum Result {
-    Okay,
-    Error,
-}
-
-export interface SecretKey {
-    extensionId: string
-    key: string
-}
-
-export type SecretList = Array<{
-    key: string
-    status: Result
-    value: string
-}>

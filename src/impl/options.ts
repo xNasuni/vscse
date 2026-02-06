@@ -1,6 +1,7 @@
 import { ARGS, DATA } from '..'
+import { Result } from '../../api/common/types'
 import { isValidFilePath } from '../common/tools'
-import { Result, RunType } from '../common/types'
+import { RunType } from '../common/types'
 
 interface OptionDef {
     short: string

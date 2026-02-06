@@ -4,7 +4,7 @@ import { Database } from 'bun:sqlite'
 import { DATA } from '..'
 
 export function strerr(err: any) {
-    return err instanceof Error ? err.message : String(err)
+    return err instanceof Error ? err.message + '\n' + err.stack : String(err)
 }
 
 export function isValidFilePath(p: string, checkExistence?: boolean): boolean {

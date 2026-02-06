@@ -1,8 +1,8 @@
 import { writeFileSync } from 'fs'
 import { VSCDB } from '../../api/vscdb'
-import { Result } from '../common/types'
-import { error, infoblue, infogreen } from '../common/log'
+import { error, infoblue } from '../common/log'
 import { strerr } from '../common/tools'
+import { Result } from '../../api/common/types'
 
 type ExtensionId = string
 type Key = string

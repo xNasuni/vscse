@@ -2,8 +2,8 @@ import { createInterface, ReadLine } from 'readline'
 import { error, msg, infoblue, nl, fatal } from '../common/log'
 import { ARGS, DATA } from '..'
 import { VSCDB } from '../../api/vscdb'
-import { Result, SecretKey, SecretList } from '../common/types'
 import { strerr } from '../common/tools'
+import { Result } from '../../api/common/types'
 
 interface Command {
     args?: string[]

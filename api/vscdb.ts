@@ -1,7 +1,12 @@
 import { Database } from 'bun:sqlite'
-import { decrypt, encrypt, getRawKey } from './encryption'
-import { Result, SecretKey, SecretList } from '../src/common/types'
+import { getPlatformEncryptionProvider } from './encryption'
 import { strerr } from '../src/common/tools'
+import {
+    PlatformEncryptionProvider,
+    Result,
+    SecretKey,
+    SecretList,
+} from './common/types'
 
 export interface SecretEntry {
     key: string
@@ -10,11 +15,11 @@ export interface SecretEntry {
 
 export class VSCDB {
     private db: Database
-    private rawKey: Uint8Array
+    private enc: PlatformEncryptionProvider
 
-    constructor(dbPath: string, keyPath: string, readonly: boolean = false) {
+    constructor(dbPath: string, readonly: boolean = false) {
         this.db = new Database(dbPath, { readonly, create: !readonly })
-        this.rawKey = getRawKey(keyPath)
+        this.enc = getPlatformEncryptionProvider()
     }
 
     getSecretKeys(): string[] {
@@ -80,7 +85,7 @@ export class VSCDB {
             }
 
             const encryptedBuffer = Buffer.from(parsed.data)
-            const decrypted = decrypt(encryptedBuffer, this.rawKey)
+            const decrypted = this.enc.decrypt(encryptedBuffer)
 
             return {
                 status: Result.Okay,
@@ -96,7 +101,7 @@ export class VSCDB {
 
     storeAndEncryptSecret(key: string, value: string): void {
         const buffer = Buffer.from(value, 'utf8')
-        const encrypted = encrypt(buffer, this.rawKey)
+        const encrypted = this.enc.encrypt(buffer)
         const json = JSON.stringify({
             type: 'Buffer',
             data: Array.from(encrypted),
