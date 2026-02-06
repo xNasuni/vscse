@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - '@primno/dpapi'
+  - better-sqlite3
+  - esbuild

@@ -1,17 +1,29 @@
 {
-  "name": "vscse",
-  "version": "0.1.0",
-  "description": "Visual Studio Code, Secrets Modification Tool API",
-  "type": "module",
-  "main": "dist/index.js",
-  "bin": {
-    "vscse": "dist/index.js"
-  },
-  "scripts": {
-    "dev": "tsx src/index.ts",
-    "build": "tsc"
-  },
-  "author": "xNasuni",
-  "license": "MIT",
-  "packageManager": "pnpm@10.18.0"
+    "name": "vscse",
+    "version": "0.1.0",
+    "description": "Visual Studio Code Secrets Explorer, Secrets Modification Tool & API",
+    "type": "commonjs",
+    "main": "dist/index.js",
+    "bin": {
+        "vscse": "dist/index.js"
+    },
+    "scripts": {
+        "dev": "bun run src/index.ts",
+        "build:win": "bun build src/index.ts --compile --target=bun-windows-x64 --outfile dist/vscse-win.exe",
+        "build:linux": "bun build src/index.ts --compile --target=bun-linux-x64 --outfile dist/vscse-linux",
+        "build:mac": "bun build src/index.ts --compile --target=bun-darwin-x64 --outfile dist/vscse-macos",
+        "build:mac-arm": "bun build src/index.ts --compile --target=bun-darwin-arm64 --outfile dist/vscse-macos-arm64",
+        "build:all": "bun run build:win && bun run build:linux && bun run build:mac && bun run build:mac-arm",
+        "build": "rm -rf dist && mkdir -p dist && bun run build:all",
+        "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx,json,css,md}'"
+    },
+    "author": "xNasuni",
+    "license": "MIT",
+    "packageManager": "pnpm@10.18.0",
+    "devDependencies": {
+        "@types/bun": "^1.3.8",
+        "@types/node": "^22.19.8",
+        "plugin‑typescript": "link:@prettier/plugin‑typescript",
+        "prettier": "^3.8.1"
+    }
 }

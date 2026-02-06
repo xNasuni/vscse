@@ -1,6 +1,7 @@
 # dev
 node_modules/
 dist/
+dev.sh
 
 # secrets
 *.env
